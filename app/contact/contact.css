@@ -1,0 +1,397 @@
+/* Contact page: a letter with blanks, under the ember tiger. One screen, no page scroll. */
+
+@property --burn {
+  syntax: "<percentage>";
+  inherits: true;
+  initial-value: -20%;
+}
+
+.contact-screen {
+  /* Size of the letter's serif type. Never below 16px, so phones don't zoom on focus. */
+  --letter: clamp(21px, min(5.7vw, 3.5vh), 34px);
+  --bad: #ff7a5c;
+}
+
+.letter-main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 0;
+  gap: clamp(10px, 2.6vh, 34px);
+  padding-block: clamp(6px, 1.6vh, 18px) clamp(10px, 2.2vh, 26px);
+}
+
+.letter-top {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: none;
+  max-width: 100%;
+  gap: clamp(8px, 1.8vh, 18px);
+}
+
+.tiger-contact {
+  aspect-ratio: 1284 / 755;
+  max-width: 100%;
+  height: min(25vh, 44vw, 290px);
+  height: min(25dvh, 44vw, 290px);
+}
+
+.letter-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  max-width: 660px;
+}
+
+.letter-form {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  max-height: 100%;
+  gap: clamp(8px, 1.9vh, 20px);
+}
+
+.letter-pair {
+  display: grid;
+  gap: inherit;
+}
+@media (min-width: 640px) {
+  .letter-pair {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+    column-gap: 0.5em;
+  }
+}
+
+/* A blank: lead-in words, then a field that takes the rest of the line. */
+.blank {
+  display: flex;
+  align-items: baseline;
+  gap: 0.36em;
+  min-width: 0;
+  font: italic 400 var(--letter) / 1.2 var(--font-display);
+}
+.blank-lead {
+  flex: none;
+  color: var(--color-bone);
+  font: italic 400 var(--letter) / 1.2 var(--font-display);
+  white-space: nowrap;
+}
+.blank-well {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+.blank-input {
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 0.1em 0.06em 0.22em;
+  border: 0;
+  border-radius: 0;
+  outline: none;
+  background: transparent;
+  color: var(--color-bone);
+  font: inherit;
+  text-overflow: ellipsis;
+  caret-color: var(--color-ember);
+  transition: color 0.5s, text-shadow 0.5s;
+}
+.blank-input::placeholder {
+  color: var(--color-dim);
+  opacity: 0.5;
+}
+.blank-input:-webkit-autofill {
+  -webkit-text-fill-color: var(--color-hot);
+  transition: background-color 99999s;
+}
+
+/* The underline: a faint rule, with an ember line drawn over it on focus and kept once filled. */
+.blank-line {
+  position: absolute;
+  inset: auto 0 0;
+  height: 1px;
+  background: rgb(236 230 216 / 0.24);
+  pointer-events: none;
+}
+.blank-line::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, var(--color-ember), var(--color-hot) 55%, var(--color-ember));
+  box-shadow: 0 0 12px rgb(255 154 46 / 0.7);
+  opacity: 0;
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1), opacity 0.4s;
+}
+.blank:focus-within .blank-line::after {
+  opacity: 1;
+  transform: scaleX(1);
+}
+.blank.is-lit .blank-line::after {
+  opacity: 0.55;
+  transform: scaleX(1);
+}
+.blank.is-lit:focus-within .blank-line::after {
+  opacity: 1;
+}
+.blank.is-lit .blank-input {
+  color: var(--color-hot);
+  text-shadow: 0 0 18px rgb(255 154 46 / 0.5);
+}
+
+.blank.is-bad .blank-line {
+  background: var(--bad);
+}
+.blank.is-bad .blank-input::placeholder {
+  color: var(--bad);
+  opacity: 0.85;
+}
+.blank.is-bad .blank-well,
+.note.is-bad {
+  animation: letter-nudge 0.42s cubic-bezier(0.3, 0.6, 0.3, 1);
+}
+
+/* The message. */
+.letter-note {
+  display: flex;
+  flex-direction: column;
+  flex: 0 1 auto;
+  min-height: 0;
+  gap: clamp(6px, 1.2vh, 12px);
+}
+.note {
+  position: relative;
+  display: flex;
+  flex: 0 1 auto;
+  min-height: 0;
+  border: 1px solid var(--color-line);
+  border-radius: 16px;
+  background: rgb(236 230 216 / 0.035);
+  transition: border-color 0.4s, background-color 0.4s;
+}
+.note:focus-within {
+  border-color: rgb(255 154 46 / 0.4);
+  background: rgb(255 154 46 / 0.045);
+}
+.note.is-bad {
+  border-color: var(--bad);
+}
+.note-input {
+  display: block;
+  width: 100%;
+  height: clamp(60px, 16vh, 168px);
+  height: clamp(60px, 16dvh, 168px);
+  min-height: 52px;
+  margin: 0;
+  padding: 13px 16px;
+  border: 0;
+  border-radius: inherit;
+  outline: none;
+  background: transparent;
+  color: var(--color-bone);
+  font: 400 16px/1.5 var(--font-ui);
+  caret-color: var(--color-ember);
+  resize: none;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: rgb(236 230 216 / 0.2) transparent;
+}
+.note-input::placeholder {
+  color: var(--color-dim);
+  opacity: 0.6;
+}
+.note.is-bad .note-input::placeholder {
+  color: var(--bad);
+  opacity: 0.85;
+}
+.note-count {
+  position: absolute;
+  right: 12px;
+  bottom: 8px;
+  color: var(--color-dim);
+  font: 500 11px/1 var(--font-ui);
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+}
+.note-beam {
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s;
+}
+.note:focus-within .note-beam {
+  opacity: 1;
+}
+
+/* Status line and the send button. */
+.letter-send {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex: none;
+  gap: 16px;
+}
+.letter-status {
+  flex: 1;
+  min-width: 0;
+  min-height: 1.35em;
+  margin: 0;
+  color: var(--bad);
+  font: 400 13px/1.35 var(--font-ui);
+}
+.send {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  gap: 9px;
+  min-width: 124px;
+  padding: 14px 26px;
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+  background: rgb(236 230 216 / 0.05);
+  color: var(--color-bone);
+  font: 500 14px/1 var(--font-ui);
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: background-color 0.5s, color 0.5s, border-color 0.5s, box-shadow 0.6s;
+}
+.send svg {
+  transition: transform 0.3s;
+}
+.send:hover svg {
+  transform: translate(2px, -2px);
+}
+.send:hover {
+  background: rgb(255 154 46 / 0.15);
+  color: var(--color-hot);
+}
+.send:focus-visible,
+.letter-again:focus-visible {
+  outline: 2px solid var(--color-ember);
+  outline-offset: 3px;
+}
+/* Once the letter is complete the button catches light. */
+.send.is-ready {
+  border-color: rgb(255 154 46 / 0.55);
+  background: rgb(255 154 46 / 0.16);
+  color: var(--color-hot);
+  box-shadow: 0 0 28px rgb(255 138 30 / 0.28), inset 0 0 14px rgb(255 154 46 / 0.12);
+}
+.send.is-ready:hover {
+  background: rgb(255 154 46 / 0.28);
+  box-shadow: 0 0 38px rgb(255 138 30 / 0.42), inset 0 0 14px rgb(255 154 46 / 0.16);
+}
+.send:disabled {
+  cursor: progress;
+}
+
+/* Sending: the letter burns away from the bottom edge up, toward the tiger. */
+.letter-form.is-burning {
+  -webkit-mask-image: linear-gradient(to top, transparent calc(var(--burn) - 16%), #000 var(--burn));
+  mask-image: linear-gradient(to top, transparent calc(var(--burn) - 16%), #000 var(--burn));
+  animation: letter-burn 1.15s cubic-bezier(0.45, 0, 0.7, 1) forwards;
+  pointer-events: none;
+}
+.letter-form.is-burning::after {
+  content: "";
+  position: absolute;
+  inset: auto -3% calc(var(--burn) - 1.5%);
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, transparent, var(--color-ember) 12%, var(--color-hot) 50%, var(--color-ember) 88%, transparent);
+  box-shadow: 0 0 22px 5px rgb(255 138 30 / 0.6);
+}
+.letter-form.is-burning .blank-lead,
+.letter-form.is-burning .blank-input,
+.letter-form.is-burning .note-input {
+  color: var(--color-ember);
+  transition: color 0.7s;
+}
+.letter-form.is-burning .note {
+  border-color: rgb(255 154 46 / 0.6);
+}
+
+/* Confirmation. */
+.letter-done {
+  display: grid;
+  justify-items: center;
+  gap: clamp(10px, 2vh, 18px);
+  text-align: center;
+  outline: none;
+}
+.letter-done-title {
+  margin: 0;
+  font: italic 400 clamp(38px, min(11vw, 8vh), 76px) / 1.05 var(--font-display);
+}
+.letter-done-copy {
+  max-width: 30ch;
+  margin: 0;
+  color: var(--color-dim);
+  font: 400 clamp(15px, 2vh, 17px) / 1.5 var(--font-ui);
+  text-wrap: balance;
+}
+.letter-again {
+  margin-top: clamp(4px, 1.4vh, 14px);
+  padding: 8px 4px;
+  border: 0;
+  border-bottom: 1px solid var(--color-line);
+  border-radius: 2px;
+  background: none;
+  color: var(--color-bone);
+  font: 500 13px/1 var(--font-ui);
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: color 0.3s, border-color 0.3s;
+}
+.letter-again:hover {
+  border-color: var(--color-ember);
+  color: var(--color-hot);
+}
+
+@keyframes letter-burn {
+  from { --burn: -4%; }
+  to { --burn: 120%; }
+}
+@keyframes letter-nudge {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  45% { transform: translateX(5px); }
+  70% { transform: translateX(-3px); }
+}
+
+/* Short screens (small phones, phones with the keyboard up): drop the slogan, shrink the tiger. */
+@media (max-height: 640px) {
+  .letter-slogan { display: none; }
+  .tiger-contact { height: min(19dvh, 40vw); }
+}
+
+/* Phones on their side: tiger beside the letter instead of above it. */
+@media (max-height: 520px) and (min-width: 600px) {
+  .letter-main {
+    flex-direction: row;
+    justify-content: center;
+    gap: clamp(20px, 5vw, 56px);
+  }
+  .letter-top { flex: 0 1 30%; }
+  .tiger-contact { width: 100%; height: auto; }
+  .letter-body { height: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .blank.is-bad .blank-well,
+  .note.is-bad,
+  .letter-form.is-burning {
+    animation: none;
+  }
+  .blank-line::after { transition: none; }
+}
