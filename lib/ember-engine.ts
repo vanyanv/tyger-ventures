@@ -51,7 +51,7 @@ export function createEmberEngine(
   const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
   let reduce = motionQuery.matches;
 
-  let W = 0, H = 0, small = false, first = true, ready = false, dead = false, raf = 0;
+  let W = 0, H = 0, small = false, first = true, ready = false, dead = false, announced = false, raf = 0;
   let parts: Particle[] = [];
   const embers: Ember[] = [];
   const flames: Flame[] = [];
@@ -89,8 +89,7 @@ export function createEmberEngine(
     if (dead) return;
     ready = true;
     layout();
-    if (reduce) { settle(); draw(0); } else raf = requestAnimationFrame(frame);
-    onReady?.();
+    if (reduce) { settle(); draw(0); announce(); } else raf = requestAnimationFrame(frame);
   };
   img.src = src;
 
@@ -215,8 +214,8 @@ export function createEmberEngine(
       const f = flames[i];
       f.life -= dt;
       if (f.life <= 0) { flames[i] = flames[flames.length - 1]; flames.pop(); continue; }
-      f.x += f.vx + Math.sin(t * 6 + f.phase) * 0.45;
-      f.y += f.vy;
+      f.x += (f.vx + Math.sin(t * 6 + f.phase) * 0.45) * frames;
+      f.y += f.vy * frames;
       const k = f.life / f.max;
       const w = f.size * (0.4 + 0.6 * k);
       const h = w * 1.9;
@@ -289,9 +288,17 @@ export function createEmberEngine(
     }
   }
 
+  // Tells the host the tiger is on the canvas. Only called after a draw has completed without throwing.
+  function announce() {
+    if (announced) return;
+    announced = true;
+    onReady?.();
+  }
+
   function frame(now: number) {
     if (dead) return;
     draw((now - t0) / 1000);
+    announce();
     raf = requestAnimationFrame(frame);
   }
 
@@ -318,8 +325,8 @@ export function createEmberEngine(
   }
 
   function onMove(e: PointerEvent) {
-    // Before the first layout W and H are 0, which would turn any movement into infinite heat.
-    if (ptr.on && ready) {
+    // Before the first layout, or in a zero-sized viewport, W and H are 0, which would turn any movement into infinite heat.
+    if (ptr.on && ready && Math.max(W, H) > 0) {
       const dx = e.clientX - ptr.x, dy = e.clientY - ptr.y;
       stir(Math.min(160, Math.sqrt(dx * dx + dy * dy)) / (Math.max(W, H) * 9));
     }
@@ -370,8 +377,9 @@ export function createEmberEngine(
   motionQuery.addEventListener("change", onMotionChange);
   window.addEventListener("resize", onResize);
   // The slot can move when fonts load or content above it changes size.
-  const observer = new ResizeObserver(onResize);
-  observer.observe(slot);
+  // Optional: without it the window resize listener still keeps the tiger in place.
+  const observer = typeof ResizeObserver === "function" ? new ResizeObserver(onResize) : null;
+  observer?.observe(slot);
   document.fonts?.ready.then(relayout);
 
   return {
@@ -384,7 +392,7 @@ export function createEmberEngine(
       dead = true;
       cancelAnimationFrame(raf);
       window.clearTimeout(resizeTimer);
-      observer.disconnect();
+      observer?.disconnect();
       motionQuery.removeEventListener("change", onMotionChange);
       window.removeEventListener("pointermove", onMove);
       window.removeEventListener("pointerdown", onDown);

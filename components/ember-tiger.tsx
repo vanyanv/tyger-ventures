@@ -47,14 +47,21 @@ export function EmberTiger({
     canvas.setAttribute("aria-hidden", "true");
     canvas.style.cssText = "position:fixed;inset:0;width:100%;height:100%;display:block;pointer-events:none;z-index:0";
     document.body.prepend(canvas);
-    const e = createEmberEngine(canvas, el, {
-      src: "/tiger-logo.svg",
-      interactive,
-      flameScale,
-      onHeat: (heat) => el.style.setProperty("--heat", heat.toFixed(3)),
-      // The static logo stays until the particles have actually been drawn.
-      onReady: () => el.setAttribute("data-live", ""),
-    });
+    let e: EmberEngine;
+    try {
+      e = createEmberEngine(canvas, el, {
+        src: "/tiger-logo.svg",
+        interactive,
+        flameScale,
+        onHeat: (heat) => el.style.setProperty("--heat", heat.toFixed(3)),
+        // The static logo stays until the particles have actually been drawn.
+        onReady: () => el.setAttribute("data-live", ""),
+      });
+    } catch {
+      // Setup failed: drop the canvas and leave the static logo in place.
+      canvas.remove();
+      return;
+    }
     engine.current = e;
     return () => {
       e.destroy();
