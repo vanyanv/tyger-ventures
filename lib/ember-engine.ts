@@ -21,6 +21,8 @@ export interface EmberEngineOptions {
   interactive?: boolean;
   /** Called when the displayed heat (0..1) changes. */
   onHeat?: (heat: number) => void;
+  /** Called once, after the tiger has been drawn for the first time. */
+  onReady?: () => void;
 }
 
 interface Particle {
@@ -36,10 +38,14 @@ const LOGO_H = 755;
 export function createEmberEngine(
   canvas: HTMLCanvasElement,
   slot: HTMLElement,
-  { src, interactive = true, onHeat }: EmberEngineOptions,
+  { src, interactive = true, onHeat, onReady }: EmberEngineOptions,
 ): EmberEngine {
-  const ctx = canvas.getContext("2d")!;
-  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const context = canvas.getContext("2d");
+  // No 2D canvas: leave the static logo in place and do nothing.
+  if (!context) return { stir() {}, burst() {}, destroy() {} };
+  const ctx = context;
+  const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+  let reduce = motionQuery.matches;
 
   let W = 0, H = 0, small = false, first = true, ready = false, dead = false, raf = 0;
   let parts: Particle[] = [];
@@ -59,7 +65,7 @@ export function createEmberEngine(
     PAL.push(`rgba(255,${g},${b},${Math.min(1, 0.5 + h * 0.4).toFixed(2)})`);
   }
   // Soft sprites for flame tongues: core, body, tail.
-  const SPRITES = [[255, 238, 180], [255, 150, 40], [224, 62, 12]].map((c) => {
+  const SPRITES = [[255, 214, 120], [255, 132, 28], [214, 48, 8]].map((c) => {
     const k = document.createElement("canvas");
     k.width = k.height = 64;
     const g = k.getContext("2d")!;
@@ -80,6 +86,7 @@ export function createEmberEngine(
     ready = true;
     layout();
     if (reduce) { settle(); draw(0); } else raf = requestAnimationFrame(frame);
+    onReady?.();
   };
   img.src = src;
 
@@ -152,17 +159,23 @@ export function createEmberEngine(
   function draw(t: number) {
     ctx.clearRect(0, 0, W, H);
     ctx.globalCompositeOperation = "lighter";
-    const dt = Math.min(0.05, Math.max(0, t - lastT));
+    // `elapsed` is real time, including time the tab spent hidden; `dt` is capped so motion never jumps.
+    const elapsed = Math.max(0, t - lastT);
+    const dt = Math.min(0.05, elapsed);
+    const frames = dt * 60;
     lastT = t;
 
     if (!reduce) {
       const idle = performance.now() - lastStir > 350;
-      energy = Math.max(0, energy - dt * (idle ? 0.085 : 0.02));
+      // Ignite before cooling: stir() caps energy at exactly 1, and any cooling would drop it back under.
       if (energy >= 1 && blaze <= 0) {
         blaze = 2.8;
         kick(box.x + box.w / 2, box.y + box.h / 2, Infinity, 5);
+      } else if (blaze > 0) {
+        blaze -= elapsed;
+        if (blaze <= 0) energy = 0.6;
       }
-      if (blaze > 0) { blaze -= dt; if (blaze <= 0) energy = 0.6; }
+      if (blaze <= 0) energy = Math.max(0, energy - elapsed * (idle ? 0.085 : 0.02));
     }
     const E = blaze > 0 ? 1.3 : energy;
     const heat = Math.min(1, E);
@@ -170,8 +183,8 @@ export function createEmberEngine(
 
     // Flames: appear once there is some heat, first near the pointer, then across the whole tiger.
     if (E > 0.15 && parts.length) {
-      const cap = small ? 420 : 900;
-      const rate = (E - 0.15) * (small ? 14 : 26);
+      const cap = small ? 560 : 1100;
+      const rate = (E - 0.15) * (small ? 20 : 38) * frames;
       const near = Math.min(W, H) * 0.24;
       let n = rate | 0;
       if (Math.random() < rate - n) n++;
@@ -189,7 +202,7 @@ export function createEmberEngine(
           vx: (Math.random() - 0.5) * 0.5,
           vy: -(1.2 + Math.random() * 2) * (1 + E * 0.9),
           life, max: life,
-          size: (5 + Math.random() * 9) * (1 + E * 1.1) * (small ? 0.8 : 1),
+          size: (7 + Math.random() * 12) * (1 + E * 1.3) * (small ? 0.8 : 1),
           phase: Math.random() * 6.28,
         });
       }
@@ -203,7 +216,7 @@ export function createEmberEngine(
       const k = f.life / f.max;
       const w = f.size * (0.4 + 0.6 * k);
       const h = w * 1.9;
-      ctx.globalAlpha = k * 0.55 * Math.min(1, (1 - k) * 8);
+      ctx.globalAlpha = k * 0.8 * Math.min(1, (1 - k) * 8);
       ctx.drawImage(SPRITES[k > 0.62 ? 0 : k > 0.3 ? 1 : 2], f.x - w / 2, f.y - h * 0.7, w, h);
     }
     ctx.globalAlpha = 1;
@@ -217,7 +230,7 @@ export function createEmberEngine(
     const wob = 0.7 * (1 + E * 3);
     for (let i = 0; i < parts.length; i++) {
       const p = parts[i];
-      if (t < p.delay) continue;
+      if (!reduce && t < p.delay) continue;
       if (!reduce) {
         const tx = p.tx + Math.sin(t * (1.3 + E * 5) + p.seed) * wob;
         const ty = p.ty + Math.cos(t * (1.1 + E * 4) + p.seed * 1.7) * wob;
@@ -295,13 +308,14 @@ export function createEmberEngine(
   }
 
   function burst(x = box.x + box.w / 2, y = box.y + box.h / 2) {
-    if (reduce) return;
+    if (reduce || !ready) return;
     kick(x, y, Math.min(W, H) * 0.32, 14);
     stir(0.1);
   }
 
   function onMove(e: PointerEvent) {
-    if (ptr.on) {
+    // Before the first layout W and H are 0, which would turn any movement into infinite heat.
+    if (ptr.on && ready) {
       const dx = e.clientX - ptr.x, dy = e.clientY - ptr.y;
       stir(Math.min(160, Math.sqrt(dx * dx + dy * dy)) / (Math.max(W, H) * 9));
     }
@@ -335,6 +349,21 @@ export function createEmberEngine(
     window.addEventListener("pointercancel", onLeave, { passive: true });
     document.addEventListener("pointerleave", onLeave);
   }
+  // Follow the reduced-motion setting if it changes while the page is open.
+  function onMotionChange() {
+    reduce = motionQuery.matches;
+    cancelAnimationFrame(raf);
+    if (!ready || dead) return;
+    if (reduce) {
+      energy = 0; blaze = 0; flames.length = 0;
+      onHeat?.(0); shownHeat = 0;
+      settle(); draw(0);
+    } else {
+      lastT = (performance.now() - t0) / 1000;
+      raf = requestAnimationFrame(frame);
+    }
+  }
+  motionQuery.addEventListener("change", onMotionChange);
   window.addEventListener("resize", onResize);
   // The slot can move when fonts load or content above it changes size.
   const observer = new ResizeObserver(onResize);
@@ -349,6 +378,7 @@ export function createEmberEngine(
       cancelAnimationFrame(raf);
       window.clearTimeout(resizeTimer);
       observer.disconnect();
+      motionQuery.removeEventListener("change", onMotionChange);
       window.removeEventListener("pointermove", onMove);
       window.removeEventListener("pointerdown", onDown);
       window.removeEventListener("pointerup", onUp);

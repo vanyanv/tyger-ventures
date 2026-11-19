@@ -46,12 +46,15 @@ export function EmberTiger({
       src: "/tiger-logo.svg",
       interactive,
       onHeat: (heat) => el.style.setProperty("--heat", heat.toFixed(3)),
+      // The static logo stays until the particles have actually been drawn.
+      onReady: () => el.setAttribute("data-live", ""),
     });
     engine.current = e;
     return () => {
       e.destroy();
       engine.current = null;
       canvas.remove();
+      el.removeAttribute("data-live");
     };
   }, [interactive]);
 
@@ -66,6 +69,7 @@ export function EmberTiger({
 
   return (
     <div ref={slot} role="img" aria-label={label} className={cn("ember-slot relative", className)}>
+      <div className="ember-still" aria-hidden="true" />
       <div className="ember-glow" aria-hidden="true" />
       <div className="ember-blaze" aria-hidden="true" />
     </div>

@@ -5,7 +5,7 @@ import { site } from "@/lib/site";
 
 export default function Home() {
   return (
-    <div className="screen relative z-10 mx-auto grid h-full max-w-[1272px] touch-none grid-rows-[auto_minmax(0,1fr)_auto] overflow-hidden">
+    <div className="screen relative z-10 mx-auto grid h-full max-w-[1272px] touch-pinch-zoom grid-rows-[auto_minmax(0,1fr)_auto] overflow-hidden">
       <header className="flex items-center justify-between gap-4">
         <h1 className="label-caps">{site.name}</h1>
         <ContactLink />
@@ -30,11 +30,9 @@ export default function Home() {
               </BlurFade>
             ))}
           </blockquote>
-          <BlurFade delay={2.8}>
-            <figcaption className="mt-[clamp(6px,1.4vh,14px)] text-[11px] leading-none font-medium tracking-[0.2em] text-dim uppercase [@media(max-height:430px)]:mt-1">
-              {site.verseCite}
-            </figcaption>
-          </BlurFade>
+          <figcaption className="mt-[clamp(6px,1.4vh,14px)] text-[11px] leading-none font-medium tracking-[0.2em] text-dim uppercase [@media(max-height:430px)]:mt-1">
+            <BlurFade delay={2.8}>{site.verseCite}</BlurFade>
+          </figcaption>
         </figure>
       </main>
 
