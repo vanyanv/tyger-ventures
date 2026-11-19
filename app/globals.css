@@ -76,6 +76,17 @@ body {
   }
 
   .ember-slot { --heat: 0; }
+  /* Static logo, shown until the particle canvas has drawn (and for visitors without JavaScript). */
+  .ember-still {
+    position: absolute;
+    inset: 0;
+    background: var(--color-ember);
+    opacity: 0.55;
+    -webkit-mask: url("/tiger-logo.svg") center / contain no-repeat;
+    mask: url("/tiger-logo.svg") center / contain no-repeat;
+    transition: opacity 0.6s;
+  }
+  .ember-slot[data-live] .ember-still { opacity: 0; }
   .ember-glow,
   .ember-blaze {
     position: absolute;
@@ -93,6 +104,18 @@ body {
     background: radial-gradient(closest-side, rgb(255 120 20 / 0.42), rgb(255 90 10 / 0.14) 55%, transparent 75%);
   }
 
+  /* Blur Fade entrance. `backwards` holds the hidden start state only during the delay. */
+  .blur-fade {
+    animation: blur-fade var(--blur-fade-duration, 0.9s) cubic-bezier(0.2, 0.7, 0.2, 1) var(--blur-fade-delay, 0s) backwards;
+  }
+  @keyframes blur-fade {
+    from {
+      opacity: 0;
+      transform: translateY(var(--blur-fade-offset, 10px));
+      filter: blur(var(--blur-fade-blur, 10px));
+    }
+  }
+
   /* A band of fire sweeps through each line of the verse in turn. */
   .verse-burn {
     color: transparent;
@@ -108,7 +131,9 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   .ember-glow,
-  .verse-burn {
+  .verse-burn,
+  .blur-fade {
     animation: none;
   }
+  .ember-still { transition: none; }
 }

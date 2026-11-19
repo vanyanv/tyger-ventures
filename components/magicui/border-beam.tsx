@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, type MotionStyle, type Transition } from "motion/react";
+import { motion, useReducedMotion, type MotionStyle, type Transition } from "motion/react";
 
 import { cn } from "@/lib/utils";
 
@@ -36,6 +36,9 @@ export function BorderBeam({
   initialOffset = 0,
   borderWidth = 1,
 }: BorderBeamProps) {
+  // The beam is decoration only, so with reduced motion it is left out and the plain border remains.
+  const reduce = useReducedMotion();
+  if (reduce) return null;
   return (
     <div
       className="pointer-events-none absolute inset-0 rounded-[inherit] border-(length:--border-beam-width) border-transparent [mask-image:linear-gradient(transparent,transparent),linear-gradient(#000,#000)] [mask-composite:intersect] [mask-clip:padding-box,border-box]"
