@@ -1,0 +1,114 @@
+@import "tailwindcss";
+
+/* Tyger Ventures: one dark screen. Night ground, bone type, ember and white-hot accents. */
+@theme inline {
+  --color-night: #06090a;
+  --color-bone: #ece6d8;
+  --color-dim: #8f8b7d;
+  --color-ember: #ff9a2e;
+  --color-hot: #fff0c9;
+  --color-line: rgb(236 230 216 / 0.16);
+
+  --font-display: var(--font-bodoni), "Didot", "Bodoni MT", Georgia, serif;
+  --font-ui: var(--font-schibsted), system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  --animate-breathe: breathe 6.25s ease-in-out infinite;
+  --animate-burn: burn 7s linear infinite;
+
+  @keyframes breathe {
+    0%, 100% { opacity: 0.55; transform: scale(0.96); }
+    50% { opacity: 1; transform: scale(1.04); }
+  }
+  @keyframes burn {
+    0% { background-position: 100% 0; }
+    45%, 100% { background-position: 0 0; }
+  }
+}
+
+:root {
+  color-scheme: dark;
+}
+
+html {
+  height: 100%;
+  height: 100dvh;
+  background: var(--color-night);
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  overscroll-behavior: none;
+}
+
+body {
+  height: 100%;
+  background: var(--color-night);
+  color: var(--color-bone);
+  font-family: var(--font-ui);
+  -webkit-tap-highlight-color: transparent;
+}
+
+@layer components {
+  /* Small tracked capitals used for the brand name and the slogan. */
+  .label-caps {
+    font: 600 12px/1 var(--font-ui);
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  @media (max-width: 640px) {
+    .label-caps { font-size: 11px; letter-spacing: 0.2em; }
+  }
+
+  /* One-screen page frame: header, flexible middle, footer. --verse is the poem's font size. */
+  .screen {
+    --verse: clamp(17px, min(3.3vw, 4.1vh), 38px);
+    padding-top: max(clamp(12px, 2.6vh, 28px), env(safe-area-inset-top, 0px));
+    padding-bottom: max(clamp(12px, 2.6vh, 28px), env(safe-area-inset-bottom, 0px));
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+  }
+
+  /* Tiger slot on the home page: as large as the width and height left over by the text allow. */
+  .tiger-home {
+    aspect-ratio: 1284 / 755;
+    max-width: 100%;
+    height: min(50.8vw, 54vh, calc(100vh - 4.8 * var(--verse) - 190px));
+    height: min(50.8vw, 54dvh, calc(100dvh - 4.8 * var(--verse) - 190px));
+  }
+
+  .ember-slot { --heat: 0; }
+  .ember-glow,
+  .ember-blaze {
+    position: absolute;
+    pointer-events: none;
+  }
+  .ember-glow {
+    inset: 8% 4%;
+    background: radial-gradient(closest-side, rgb(255 138 30 / 0.17), transparent 72%);
+    animation: var(--animate-breathe);
+  }
+  /* Fades in with heat as the tiger is stirred. */
+  .ember-blaze {
+    inset: -28% -18% -8%;
+    opacity: calc(var(--heat) * 0.95);
+    background: radial-gradient(closest-side, rgb(255 120 20 / 0.42), rgb(255 90 10 / 0.14) 55%, transparent 75%);
+  }
+
+  /* A band of fire sweeps through each line of the verse in turn. */
+  .verse-burn {
+    color: transparent;
+    -webkit-background-clip: text;
+    background-clip: text;
+    background-image: linear-gradient(100deg, var(--color-bone) 0 40%, var(--color-hot) 47%, var(--color-ember) 52%, var(--color-bone) 60% 100%);
+    background-size: 300% 100%;
+    background-position: 100% 0;
+    animation: var(--animate-burn);
+    animation-delay: calc(3.2s + var(--i) * 0.45s);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ember-glow,
+  .verse-burn {
+    animation: none;
+  }
+}

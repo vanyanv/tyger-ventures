@@ -1,18 +1,37 @@
-# Tyger Ventures concepts
+# Tyger Ventures
 
-Three one-screen directions for the new tygerventures.com. Each concept fits a single screen with no scrolling and is built phone first.
+The tygerventures.com site: a single dark screen with no scrolling. The tiger logo is drawn from ember particles; moving the pointer or dragging a finger stirs it, and sustained stirring builds from sparks to flames to a full blaze.
 
-| Path | Concept |
+## Stack
+
+- Next.js (App Router, TypeScript), deployed on Vercel
+- Tailwind CSS v4, with tokens in `app/globals.css`
+- Motion (`motion/react`) for entrance animation
+- Magic UI components in `components/magicui` (Border Beam, Blur Fade)
+
+## Layout of the code
+
+| Path | What it is |
 | --- | --- |
-| `/` | Chooser page linking to the three concepts |
-| `/burning-bright/` | The tiger logo assembles from ember particles on a dark page |
-| `/broadside/` | Black and white poster with a kinetic wordmark and an inverting "eye" |
-| `/night-forest/` | Centered layout inside animated tiger stripes, with a light and dark switch |
+| `app/page.tsx` | The home page |
+| `app/layout.tsx` | Fonts (Bodoni Moda, Schibsted Grotesk) and metadata |
+| `app/globals.css` | Color and font tokens, plus the few classes Tailwind utilities can't express |
+| `lib/site.ts` | All copy and links: name, slogan, verse, contact link, copyright |
+| `lib/ember-engine.ts` | The canvas particle engine (framework-free) |
+| `components/ember-tiger.tsx` | React wrapper for the engine; its ref exposes `stir()` and `burst()` |
+| `public/tiger-logo.svg` | The logo the particles are sampled from |
 
-This is a static site with no build step. Each concept is one self-contained `index.html`. `tiger-logo.svg` is shared by all pages.
+## Develop
 
-To preview locally, run `npx serve .` (or `python3 -m http.server`) from this folder and open the address it prints.
+```bash
+npm install
+npm run dev
+```
 
-On Vercel, import the repository with the framework preset set to "Other" and leave the build command empty.
+`npm run build` makes the production build and `npm run lint` runs ESLint.
 
-Copy is limited to what is on the current site: the name, the Blake stanza, the Contact link and the copyright line.
+## Notes
+
+- The page must fit one screen on phones and desktops. The tiger's size is derived from the space the text leaves over (`.tiger-home` in `app/globals.css`), and the three vertical gaps in the middle of the page are kept equal.
+- The verse and its attribution are verbatim from the original site. Edit copy only in `lib/site.ts`.
+- With "reduce motion" turned on, the tiger is drawn once and nothing animates.
