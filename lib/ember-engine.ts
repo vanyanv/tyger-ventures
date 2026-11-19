@@ -11,6 +11,8 @@ export interface EmberEngine {
   stir(amount: number): void;
   /** Kick the particles outward from a point in viewport coordinates (defaults to the tiger's center). */
   burst(x?: number, y?: number): void;
+  /** Hold the heat at or above this level (0..1), so the tiger keeps burning without being stirred. */
+  setFloor(heat: number): void;
   destroy(): void;
 }
 
@@ -21,6 +23,8 @@ export interface EmberEngineOptions {
   interactive?: boolean;
   /** Called when the displayed heat (0..1) changes. */
   onHeat?: (heat: number) => void;
+  /** Multiplies the size of the flame tongues. Use below 1 when the tiger is drawn small. Default 1. */
+  flameScale?: number;
 }
 
 interface Particle {
@@ -36,7 +40,7 @@ const LOGO_H = 755;
 export function createEmberEngine(
   canvas: HTMLCanvasElement,
   slot: HTMLElement,
-  { src, interactive = true, onHeat }: EmberEngineOptions,
+  { src, interactive = true, onHeat, flameScale = 1 }: EmberEngineOptions,
 ): EmberEngine {
   const ctx = canvas.getContext("2d")!;
   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -47,7 +51,7 @@ export function createEmberEngine(
   const flames: Flame[] = [];
   let box = { x: 0, y: 0, w: 1, h: 1 };
   const ptr = { x: -9999, y: -9999, on: false };
-  let energy = 0, lastStir = 0, blaze = 0, lastT = 0, shownHeat = -1;
+  let energy = 0, floor = 0, lastStir = 0, blaze = 0, lastT = 0, shownHeat = -1;
   const t0 = performance.now();
 
   // Particle colors by heat, dull orange to white-hot.
@@ -157,12 +161,12 @@ export function createEmberEngine(
 
     if (!reduce) {
       const idle = performance.now() - lastStir > 350;
-      energy = Math.max(0, energy - dt * (idle ? 0.085 : 0.02));
+      energy = Math.max(floor, energy - dt * (idle ? 0.085 : 0.02));
       if (energy >= 1 && blaze <= 0) {
         blaze = 2.8;
         kick(box.x + box.w / 2, box.y + box.h / 2, Infinity, 5);
       }
-      if (blaze > 0) { blaze -= dt; if (blaze <= 0) energy = 0.6; }
+      if (blaze > 0) { blaze -= dt; if (blaze <= 0) energy = Math.max(0.6, floor); }
     }
     const E = blaze > 0 ? 1.3 : energy;
     const heat = Math.min(1, E);
@@ -189,7 +193,7 @@ export function createEmberEngine(
           vx: (Math.random() - 0.5) * 0.5,
           vy: -(1.2 + Math.random() * 2) * (1 + E * 0.9),
           life, max: life,
-          size: (7 + Math.random() * 12) * (1 + E * 1.3) * (small ? 0.8 : 1),
+          size: (7 + Math.random() * 12) * (1 + E * 1.3) * (small ? 0.8 : 1) * flameScale,
           phase: Math.random() * 6.28,
         });
       }
@@ -344,6 +348,9 @@ export function createEmberEngine(
   return {
     stir,
     burst,
+    setFloor(heat) {
+      floor = reduce ? 0 : Math.min(0.9, Math.max(0, heat));
+    },
     destroy() {
       dead = true;
       cancelAnimationFrame(raf);

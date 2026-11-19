@@ -2,8 +2,7 @@
 export const site = {
   name: "Tyger Ventures",
   slogan: "For ideas too big to ignore",
-  /** Change to "/contact" once the contact page lands. */
-  contactHref: "https://www.tygerventures.com/contact",
+  contactHref: "/contact",
   verse: [
     "Tyger Tyger, burning bright",
     "In the forests of the night",
