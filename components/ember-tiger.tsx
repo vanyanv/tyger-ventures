@@ -10,6 +10,8 @@ export interface EmberTigerHandle {
   stir(amount: number): void;
   /** Scatter the particles from a viewport point, or from the tiger's center. */
   burst(x?: number, y?: number): void;
+  /** Keep the heat at or above this level (0..1) until told otherwise. */
+  setFloor(heat: number): void;
 }
 
 interface EmberTigerProps {
@@ -19,6 +21,8 @@ interface EmberTigerProps {
   /** React to pointer movement and taps anywhere on the page. Default true. */
   interactive?: boolean;
   label?: string;
+  /** Multiplies the size of the flame tongues. Use below 1 when the tiger is drawn small. */
+  flameScale?: number;
 }
 
 /**
@@ -30,6 +34,7 @@ export function EmberTiger({
   className,
   interactive = true,
   label = "Tyger Ventures tiger logo, drawn in embers",
+  flameScale = 1,
 }: EmberTigerProps) {
   const slot = useRef<HTMLDivElement>(null);
   const engine = useRef<EmberEngine | null>(null);
@@ -47,6 +52,7 @@ export function EmberTiger({
       e = createEmberEngine(canvas, el, {
         src: "/tiger-logo.svg",
         interactive,
+        flameScale,
         onHeat: (heat) => el.style.setProperty("--heat", heat.toFixed(3)),
         // The static logo stays until the particles have actually been drawn.
         onReady: () => el.setAttribute("data-live", ""),
@@ -63,13 +69,14 @@ export function EmberTiger({
       canvas.remove();
       el.removeAttribute("data-live");
     };
-  }, [interactive]);
+  }, [interactive, flameScale]);
 
   useImperativeHandle(
     ref,
     () => ({
       stir: (amount) => engine.current?.stir(amount),
       burst: (x, y) => engine.current?.burst(x, y),
+      setFloor: (heat) => engine.current?.setFloor(heat),
     }),
     [],
   );
