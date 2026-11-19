@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Tyger Ventures Night Forest</title>
+<meta name="description" content="Tyger Ventures. A quiet centered page inside living tiger stripes.">
+<meta name="theme-color" content="#f4f5f2">
+<meta name="robots" content="noindex">
+<link rel="icon" href="/tiger-logo.svg" type="image/svg+xml">
+<link rel="preload" href="/tiger-logo.svg" as="image" type="image/svg+xml">
+<style>html{height:100%;height:100dvh;box-sizing:border-box;padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px);-webkit-text-size-adjust:100%;text-size-adjust:100%;overscroll-behavior:none}body{margin:0;-webkit-tap-highlight-color:transparent}img{max-width:100%}[hidden]{display:none!important}</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@1,6..72,400;1,6..72,500&family=Red+Hat+Display:wght@500;700;900&family=Red+Hat+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one quiet centered column in a clearing. The whole screen behind it is a living
+   pelt of stripes (tiger and tree trunks at once) that thins out toward the middle and catches fire near the pointer. */
+:root{
+  --ground:#f4f5f2;
+  --ink:#101311;
+  --soft:#dfe2dc;
+  --mute:#676d68;
+  --fire:#f07a12;
+  --chip:rgba(16,19,17,.06);
+  --display:"Red Hat Display","Avenir Next","Segoe UI",system-ui,sans-serif;
+  --serif:"Newsreader","Iowan Old Style",Georgia,serif;
+  --mono:"Red Hat Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--ground:#090c0a;--ink:#eef0ea;--soft:#1a201c;--mute:#8e958f;--fire:#ff9330;--chip:rgba(238,240,234,.08);color-scheme:dark}}
+:root[data-theme="dark"]{--ground:#090c0a;--ink:#eef0ea;--soft:#1a201c;--mute:#8e958f;--fire:#ff9330;--chip:rgba(238,240,234,.08);color-scheme:dark}
+@property --a{syntax:"<angle>";inherits:false;initial-value:0deg}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;background:var(--ground);color:var(--ink);font-family:var(--display);overflow:hidden;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+}
+#pelt{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:0}
+.clearing{
+  position:relative;z-index:1;height:100%;display:grid;grid-template-rows:minmax(0,1fr) auto;
+  padding-block:clamp(12px,2.4vh,24px);touch-action:none;
+}
+.col{min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(8px,2.2vh,26px);text-align:center}
+.mark{position:relative;flex:0 1 auto;min-height:0;height:min(24vh,34vw);aspect-ratio:1284/755;display:grid;place-items:center}
+.mark svg{position:relative;width:100%;height:100%;color:var(--ink);animation:pop 1s .15s cubic-bezier(.2,.9,.2,1) both}
+@keyframes pop{from{opacity:0;transform:scale(.86);filter:blur(8px)}}
+.ring{position:absolute;left:50%;top:50%;width:60%;aspect-ratio:1;border-radius:50%;border:1px solid var(--ink);opacity:0;transform:translate(-50%,-50%) scale(.6);animation:ripple 4.5s cubic-bezier(.2,.6,.3,1) infinite;animation-delay:calc(var(--i)*1.5s);pointer-events:none}
+@keyframes ripple{0%{opacity:0;transform:translate(-50%,-50%) scale(.55)}12%{opacity:.22}100%{opacity:0;transform:translate(-50%,-50%) scale(2.1)}}
+.name{margin:0;font-weight:900;font-size:clamp(30px,min(8.4vw,8.6vh),88px);line-height:.95;letter-spacing:-.035em;text-transform:lowercase;white-space:nowrap;cursor:default}
+.name em{font-style:normal;color:var(--fire)}
+.verse{margin:0}
+.poem{margin:0;font-family:var(--serif);font-style:italic;font-weight:400;font-size:clamp(15px,min(4.1vw,2.9vh),24px);line-height:1.32}
+.poem .l{display:block}
+.poem .w{display:inline-block;animation:word .7s cubic-bezier(.2,.7,.2,1) both;animation-delay:calc(.9s + var(--n)*.07s)}
+@keyframes word{from{opacity:0;filter:blur(8px);transform:translateY(.35em)}}
+.cite{display:block;margin-top:clamp(6px,1.2vh,12px);font:400 11px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--mute);animation:word .7s 2.7s both}
+.acts{display:flex;align-items:center;gap:10px;animation:word .8s 2.9s both}
+.btn{
+  position:relative;overflow:hidden;display:inline-flex;align-items:center;gap:9px;height:44px;padding:0 22px;border-radius:999px;
+  background:var(--ink);color:var(--ground);text-decoration:none;font:700 14px/1 var(--display);letter-spacing:.01em;
+  transition:transform .25s cubic-bezier(.2,.8,.2,1);
+}
+.btn::before{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 35%,var(--fire) 50%,transparent 65%);opacity:.75;transform:translateX(-120%);animation:shine 3.6s 3.4s ease-in-out infinite}
+@keyframes shine{0%{transform:translateX(-120%)}45%,100%{transform:translateX(120%)}}
+.btn span,.btn svg{position:relative}
+.btn:hover{transform:translateY(-2px) scale(1.03)}
+.btn:active{transform:scale(.97)}
+.btn svg{transition:transform .3s}
+.btn:hover svg{transform:translateX(3px)}
+.tog{width:44px;height:44px;border-radius:50%;border:0;background:var(--chip);color:var(--ink);display:grid;place-items:center;cursor:pointer;backdrop-filter:blur(6px);transition:transform .4s cubic-bezier(.2,.8,.2,1),background .3s}
+.tog:hover{transform:rotate(40deg) scale(1.06)}
+.btn:focus-visible,.tog:focus-visible{outline:2px solid var(--fire);outline-offset:3px}
+.legal{margin:0 auto;width:fit-content;max-width:100%;padding:5px 12px;border-radius:999px;background:var(--ground);text-align:center;font:400 11px/1.3 var(--mono);letter-spacing:.04em;color:var(--mute)}
+::view-transition-old(root),::view-transition-new(root){animation:none;mix-blend-mode:normal}
+::view-transition-new(root){animation:iris .7s cubic-bezier(.3,0,.2,1)}
+@keyframes iris{from{clip-path:circle(0 at var(--vx,50%) var(--vy,50%))}to{clip-path:circle(150% at var(--vx,50%) var(--vy,50%))}}
+@media (max-height:460px){
+  .mark{height:22vh}.name{font-size:9vh}.poem{font-size:12.5px;line-height:1.18}.cite{display:inline;margin-left:8px}
+  .btn,.tog{height:34px}.tog{width:34px}.col{gap:5px}.ring{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  .mark svg,.ring,.poem .w,.cite,.acts,.btn::before{animation:none}
+  ::view-transition-new(root){animation:none}
+}
+</style>
+</head>
+<body>
+<canvas id="pelt" aria-hidden="true"></canvas>
+<div class="clearing">
+  <main class="col">
+    <div class="mark">
+      <i class="ring" style="--i:0"></i><i class="ring" style="--i:1"></i><i class="ring" style="--i:2"></i>
+      <svg viewBox="0 0 1284 755" role="img" aria-label="Tyger Ventures tiger logo"><use href="/tiger-logo.svg#t" fill="currentColor"/></svg>
+    </div>
+    <h1 class="name" id="name" aria-label="Tyger Ventures"><span id="scr" aria-hidden="true">tyger ventures</span><em aria-hidden="true">.</em></h1>
+    <figure class="verse">
+      <blockquote class="poem" id="poem">
+        <span class="l">Tyger Tyger, burning bright</span>
+        <span class="l">In the forests of the night</span>
+        <span class="l">What immortal hand or eye</span>
+        <span class="l">Could frame thy fearful symmetry?</span>
+      </blockquote>
+      <figcaption class="cite">-William Blake, 1794</figcaption>
+    </figure>
+    <div class="acts">
+      <a class="btn" href="https://www.tygerventures.com/contact" target="_blank" rel="noopener"><span>Contact</span>
+        <svg width="14" height="10" viewBox="0 0 14 10" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M0 5h12M8.5 1 12.5 5l-4 4"/></svg>
+      </a>
+      <button class="tog" id="tog" type="button" aria-label="Switch between light and dark">
+        <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><circle cx="9" cy="9" r="7" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M9 2a7 7 0 0 1 0 14z" fill="currentColor"/></svg>
+      </button>
+    </div>
+  </main>
+  <p class="legal">© 2026 Tyger Ventures, LLC. All Rights Reserved</p>
+</div>
+
+<script>
+(function(){
+  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const root=document.documentElement;
+
+  /* poem: split into words for the blur-in, text stays verbatim */
+  let n=0;
+  document.querySelectorAll('#poem .l').forEach(function(l){
+    const words=l.textContent.split(' ');l.textContent='';
+    words.forEach(function(w,i){const s=document.createElement('span');s.className='w';s.style.setProperty('--n',n++);s.textContent=w;l.appendChild(s);if(i<words.length-1)l.appendChild(document.createTextNode(' '))});
+  });
+
+  /* name: scramble, then resolve */
+  const scr=document.getElementById('scr'),FINAL='tyger ventures',GL='abcdefghijklmnopqrstuvwxyz';
+  let busy=false;
+  function scramble(){
+    if(busy||reduce)return;busy=true;let f=0;
+    (function tick(){
+      let out='';const done=f/2.2;
+      for(let i=0;i<FINAL.length;i++)out+=FINAL[i]===' '?' ':(i<done?FINAL[i]:GL[Math.random()*26|0]);
+      scr.textContent=out;f++;
+      if(done<FINAL.length)setTimeout(tick,34);else{scr.textContent=FINAL;busy=false}
+    })();
+  }
+  setTimeout(scramble,350);
+  document.getElementById('name').addEventListener('pointerenter',scramble);
+  document.getElementById('name').addEventListener('pointerdown',scramble);
+
+  /* stripes */
+  const cv=document.getElementById('pelt');
+  const gl=cv.getContext('webgl',{antialias:false,alpha:false,powerPreference:'low-power'});
+  let setColors=function(){};
+  if(gl){
+    const vs='attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}';
+    const fs=[
+    'precision highp float;uniform vec2 r;uniform float t;uniform float k;uniform vec2 m;uniform vec3 cg;uniform vec3 cs;uniform vec3 ci;uniform vec3 cf;',
+    'float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}',
+    'float n(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(h(i),h(i+vec2(1,0)),f.x),mix(h(i+vec2(0,1)),h(i+vec2(1,1)),f.x),f.y);}',
+    'float fb(vec2 p){float a=.5,s=0.;for(int i=0;i<4;i++){s+=a*n(p);p=p*2.03+17.;a*=.5;}return s;}',
+    'void main(){',
+    ' vec2 p=(gl_FragCoord.xy-.5*r)/min(r.x,r.y);vec2 q=(gl_FragCoord.xy-.5*r)/(.5*r);',
+    ' float w1=fb(p*vec2(1.1,.55)+vec2(0.,t*.035));float w2=fb(p*vec2(2.6,1.2)-vec2(t*.02,t*.012));',
+    ' float x=p.x*10.5+w1*5.2+w2*1.6+p.y*.5;',
+    ' float s=sin(x*3.14159);',
+    ' float th=mix(.15,.8,fb(p*vec2(.9,2.3)+31.+t*.01));th=mix(1.02,th,k);',
+    ' float px=10./min(r.x,r.y);float st=smoothstep(th,th+px*2.+.03,s);st*=smoothstep(.3,.42,fb(p*vec2(1.7,1.1)+5.+vec2(0.,t*.02)));',
+    ' float d=length(q);float clear=smoothstep(.42,1.02,d);float edge=smoothstep(.8,1.35,d);',
+    ' vec2 mp=(m-.5*r)/min(r.x,r.y);vec2 dm=p-mp;float g=exp(-dot(dm,dm)*7.5);',
+    ' vec3 stripe=mix(cs,ci,edge);',
+    ' vec3 col=mix(cg,stripe,st*clear);',
+    ' col=mix(col,cf,st*g*(.14+.86*clear)*.9);',
+    ' col+=cf*g*.035;',
+    ' gl_FragColor=vec4(col,1.);}'].join('\n');
+    function sh(type,src){const s=gl.createShader(type);gl.shaderSource(s,src);gl.compileShader(s);return s}
+    const pr=gl.createProgram();gl.attachShader(pr,sh(gl.VERTEX_SHADER,vs));gl.attachShader(pr,sh(gl.FRAGMENT_SHADER,fs));gl.linkProgram(pr);
+    if(gl.getProgramParameter(pr,gl.LINK_STATUS)){
+      gl.useProgram(pr);
+      const b=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,b);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW);
+      const loc=gl.getAttribLocation(pr,'p');gl.enableVertexAttribArray(loc);gl.vertexAttribPointer(loc,2,gl.FLOAT,false,0,0);
+      const U={};['r','t','k','m','cg','cs','ci','cf'].forEach(function(u){U[u]=gl.getUniformLocation(pr,u)});
+      let dpr=1,W=1,H=1;
+      const probe=document.createElement('i');probe.style.display='none';document.body.appendChild(probe);
+      function rgb(v){probe.style.color='';probe.style.color=getComputedStyle(root).getPropertyValue(v).trim();const c=getComputedStyle(probe).color.match(/[\d.]+/g).map(Number);return [c[0]/255,c[1]/255,c[2]/255]}
+      setColors=function(){gl.uniform3fv(U.cg,rgb('--ground'));gl.uniform3fv(U.cs,rgb('--soft'));gl.uniform3fv(U.ci,rgb('--ink'));gl.uniform3fv(U.cf,rgb('--fire'))};
+      function size(){dpr=Math.min(window.devicePixelRatio||1,1.5);W=cv.width=Math.round(innerWidth*dpr);H=cv.height=Math.round(innerHeight*dpr);gl.viewport(0,0,W,H);gl.uniform2f(U.r,W,H)}
+      size();setColors();addEventListener('resize',function(){size();if(reduce)render(performance.now())});
+      const ptr={x:innerWidth*.5,y:innerHeight*.5,last:-1e9};let mx=innerWidth*.8,my=innerHeight*.3;
+      addEventListener('pointermove',function(e){ptr.x=e.clientX;ptr.y=e.clientY;ptr.last=performance.now()},{passive:true});
+      addEventListener('pointerdown',function(e){ptr.x=e.clientX;ptr.y=e.clientY;ptr.last=performance.now()},{passive:true});
+      const t0=performance.now();
+      function render(now){
+        const t=(now-t0)/1000,live=now-ptr.last<2500;
+        const tx=live?ptr.x:innerWidth*(.5+.42*Math.sin(t*.31)),ty=live?ptr.y:innerHeight*(.5+.4*Math.cos(t*.23));
+        const e=live?.12:.03;mx+=(tx-mx)*e;my+=(ty-my)*e;
+        const k=reduce?1:Math.min(1,t/2.4);
+        gl.uniform1f(U.t,reduce?12:t+12);gl.uniform1f(U.k,1-Math.pow(1-k,3));gl.uniform2f(U.m,mx*dpr,(innerHeight-my)*dpr);
+        gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
+        if(!reduce)requestAnimationFrame(render);
+      }
+      requestAnimationFrame(render);
+      matchMedia('(prefers-color-scheme: dark)').addEventListener('change',function(){setColors();if(reduce)render(performance.now())});
+      window.__repaint=function(){setColors();if(reduce)render(performance.now())};
+    }
+  }
+
+  /* theme toggle with an iris wipe from the button */
+  const tog=document.getElementById('tog');
+  tog.addEventListener('click',function(){
+    const dark=root.dataset.theme?root.dataset.theme==='dark':matchMedia('(prefers-color-scheme: dark)').matches;
+    const r=tog.getBoundingClientRect();
+    root.style.setProperty('--vx',(r.left+r.width/2)+'px');root.style.setProperty('--vy',(r.top+r.height/2)+'px');
+    const apply=function(){root.dataset.theme=dark?'light':'dark';if(window.__repaint)window.__repaint();else setColors()};
+    if(document.startViewTransition&&!reduce)document.startViewTransition(apply);else apply();
+  });
+})();
+</script>
+</body>
+</html>
