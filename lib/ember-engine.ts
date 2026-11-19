@@ -373,8 +373,9 @@ export function createEmberEngine(
   motionQuery.addEventListener("change", onMotionChange);
   window.addEventListener("resize", onResize);
   // The slot can move when fonts load or content above it changes size.
-  const observer = new ResizeObserver(onResize);
-  observer.observe(slot);
+  // Optional: without it the window resize listener still keeps the tiger in place.
+  const observer = typeof ResizeObserver === "function" ? new ResizeObserver(onResize) : null;
+  observer?.observe(slot);
   document.fonts?.ready.then(relayout);
 
   return {
@@ -384,7 +385,7 @@ export function createEmberEngine(
       dead = true;
       cancelAnimationFrame(raf);
       window.clearTimeout(resizeTimer);
-      observer.disconnect();
+      observer?.disconnect();
       motionQuery.removeEventListener("change", onMotionChange);
       window.removeEventListener("pointermove", onMove);
       window.removeEventListener("pointerdown", onDown);
