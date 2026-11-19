@@ -59,7 +59,7 @@ export function createEmberEngine(
     PAL.push(`rgba(255,${g},${b},${Math.min(1, 0.5 + h * 0.4).toFixed(2)})`);
   }
   // Soft sprites for flame tongues: core, body, tail.
-  const SPRITES = [[255, 238, 180], [255, 150, 40], [224, 62, 12]].map((c) => {
+  const SPRITES = [[255, 214, 120], [255, 132, 28], [214, 48, 8]].map((c) => {
     const k = document.createElement("canvas");
     k.width = k.height = 64;
     const g = k.getContext("2d")!;
@@ -170,8 +170,8 @@ export function createEmberEngine(
 
     // Flames: appear once there is some heat, first near the pointer, then across the whole tiger.
     if (E > 0.15 && parts.length) {
-      const cap = small ? 420 : 900;
-      const rate = (E - 0.15) * (small ? 14 : 26);
+      const cap = small ? 560 : 1100;
+      const rate = (E - 0.15) * (small ? 20 : 38);
       const near = Math.min(W, H) * 0.24;
       let n = rate | 0;
       if (Math.random() < rate - n) n++;
@@ -189,7 +189,7 @@ export function createEmberEngine(
           vx: (Math.random() - 0.5) * 0.5,
           vy: -(1.2 + Math.random() * 2) * (1 + E * 0.9),
           life, max: life,
-          size: (5 + Math.random() * 9) * (1 + E * 1.1) * (small ? 0.8 : 1),
+          size: (7 + Math.random() * 12) * (1 + E * 1.3) * (small ? 0.8 : 1),
           phase: Math.random() * 6.28,
         });
       }
@@ -203,7 +203,7 @@ export function createEmberEngine(
       const k = f.life / f.max;
       const w = f.size * (0.4 + 0.6 * k);
       const h = w * 1.9;
-      ctx.globalAlpha = k * 0.55 * Math.min(1, (1 - k) * 8);
+      ctx.globalAlpha = k * 0.8 * Math.min(1, (1 - k) * 8);
       ctx.drawImage(SPRITES[k > 0.62 ? 0 : k > 0.3 ? 1 : 2], f.x - w / 2, f.y - h * 0.7, w, h);
     }
     ctx.globalAlpha = 1;
