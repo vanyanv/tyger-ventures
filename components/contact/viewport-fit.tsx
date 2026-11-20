@@ -27,7 +27,11 @@ export function ViewportFit() {
       const covered = vv ? window.innerHeight - vv.height > 80 : false;
       if (covered) {
         root.style.setProperty("--contact-h", `${Math.round(height)}px`);
-        root.style.setProperty("--contact-top", `${Math.round(vv!.offsetTop)}px`);
+        // Where the visible area starts in the document, less where the screen itself starts. This
+        // holds whether the browser slid the visual viewport, scrolled the page, or did both.
+        const screen = document.querySelector<HTMLElement>(".contact-screen");
+        const top = Math.max(0, vv!.pageTop - (screen?.offsetTop ?? 0));
+        root.style.setProperty("--contact-top", `${Math.round(top)}px`);
       } else {
         root.style.removeProperty("--contact-h");
         root.style.removeProperty("--contact-top");
@@ -48,12 +52,14 @@ export function ViewportFit() {
     vv?.addEventListener("resize", schedule);
     vv?.addEventListener("scroll", schedule);
     window.addEventListener("resize", schedule);
+    window.addEventListener("scroll", schedule, { passive: true });
     document.addEventListener("focusin", schedule);
     return () => {
       cancelAnimationFrame(frame);
       vv?.removeEventListener("resize", schedule);
       vv?.removeEventListener("scroll", schedule);
       window.removeEventListener("resize", schedule);
+      window.removeEventListener("scroll", schedule);
       document.removeEventListener("focusin", schedule);
       root.style.removeProperty("--contact-h");
       root.style.removeProperty("--contact-top");

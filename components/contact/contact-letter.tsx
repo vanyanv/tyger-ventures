@@ -94,7 +94,8 @@ export function ContactLetter() {
 
   /** Return on a one-line blank moves to the next field, so the phone keyboard's key never sends early. */
   function nextOnEnter(e: KeyboardEvent<HTMLInputElement>) {
-    if (e.key !== "Enter" || e.nativeEvent.isComposing) return;
+    // keyCode 229: Safari reports the Return that confirms IME text with isComposing already false.
+    if (e.key !== "Enter" || e.nativeEvent.isComposing || e.nativeEvent.keyCode === 229) return;
     e.preventDefault();
     const next = CONTACT_ORDER[CONTACT_ORDER.indexOf(e.currentTarget.name as ContactField) + 1];
     form.current?.querySelector<HTMLElement>(`[name="${next}"]`)?.focus();
