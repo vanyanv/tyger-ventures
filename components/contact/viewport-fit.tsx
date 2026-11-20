@@ -35,6 +35,9 @@ export function ViewportFit() {
       } else {
         root.style.removeProperty("--contact-h");
         root.style.removeProperty("--contact-top");
+        // iOS can leave the page shifted up after the keyboard closes. Nothing here scrolls the
+        // page itself, so any offset is that leftover: put the page back.
+        if (window.scrollY > 0) window.scrollTo(0, 0);
       }
       root.toggleAttribute("data-contact-compact", compact);
 

@@ -51,7 +51,7 @@ export function createEmberEngine(
   const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
   let reduce = motionQuery.matches;
 
-  let W = 0, H = 0, small = false, first = true, ready = false, dead = false, announced = false, raf = 0;
+  let W = 0, H = 0, small = false, first = true, hidden = false, ready = false, dead = false, announced = false, raf = 0;
   let parts: Particle[] = [];
   const embers: Ember[] = [];
   const flames: Flame[] = [];
@@ -108,6 +108,7 @@ export function createEmberEngine(
       parts = [];
       flames.length = 0;
       for (const e of embers) e.life = 0;
+      hidden = true;
       return;
     }
     const s = Math.min(r.width / LOGO_W, r.height / LOGO_H);
@@ -140,9 +141,11 @@ export function createEmberEngine(
     }
     const size = Math.max(1.1, Math.min(2.4, step * 0.62));
     parts = pts.map(([tx, ty], i) => {
+      // First arrival: fly in from below the screen. Back from hidden: gather from close by, so
+      // the particles don't stream across whatever the page is showing now.
       const p = parts[i] ?? {
-        x: tx + (Math.random() - 0.5) * W * 0.5,
-        y: H + 20 + Math.random() * H * 0.7,
+        x: tx + (Math.random() - 0.5) * (hidden ? w * 0.5 : W * 0.5),
+        y: hidden ? ty + (Math.random() - 0.5) * h * 0.8 : H + 20 + Math.random() * H * 0.7,
         vx: 0, vy: 0, tx, ty,
         seed: Math.random() * 6.283,
         base: Math.random(),
@@ -155,6 +158,7 @@ export function createEmberEngine(
       return p;
     });
     first = false;
+    hidden = false;
     if (!embers.length) {
       for (let i = 0; i < (small ? 240 : 480); i++) {
         embers.push({ x: 0, y: 0, vx: 0, vy: 0, life: 0, max: 1, wait: Math.random() * 4 + 1.6 });

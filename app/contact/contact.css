@@ -345,6 +345,11 @@
   margin: 0;
   font: italic 400 clamp(38px, min(11vw, 8vh), 76px) / 1.05 var(--font-display);
 }
+/* Room inside the clipped-gradient box for the italic overhang and descenders, so no glyph is cut. */
+.letter-done-title .verse-burn {
+  margin: -0.14em -0.18em -0.22em;
+  padding: 0.14em 0.18em 0.22em;
+}
 .letter-done-copy {
   max-width: 30ch;
   margin: 0;
