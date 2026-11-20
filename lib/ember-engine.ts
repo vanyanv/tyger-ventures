@@ -103,6 +103,13 @@ export function createEmberEngine(
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
     const r = slot.getBoundingClientRect();
+    // Slot hidden (for example while a phone keyboard is up): draw nothing until it is back.
+    if (r.width < 1 || r.height < 1) {
+      parts = [];
+      flames.length = 0;
+      for (const e of embers) e.life = 0;
+      return;
+    }
     const s = Math.min(r.width / LOGO_W, r.height / LOGO_H);
     const w = Math.max(40, Math.round(LOGO_W * s));
     const h = Math.max(24, Math.round(LOGO_H * s));

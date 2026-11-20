@@ -92,6 +92,14 @@ export function ContactLetter() {
     window.setTimeout(() => setPhase("sent"), reduce ? 0 : BURN_MS);
   }
 
+  /** Return on a one-line blank moves to the next field, so the phone keyboard's key never sends early. */
+  function nextOnEnter(e: KeyboardEvent<HTMLInputElement>) {
+    if (e.key !== "Enter" || e.nativeEvent.isComposing) return;
+    e.preventDefault();
+    const next = CONTACT_ORDER[CONTACT_ORDER.indexOf(e.currentTarget.name as ContactField) + 1];
+    form.current?.querySelector<HTMLElement>(`[name="${next}"]`)?.focus();
+  }
+
   function sendOnShortcut(e: KeyboardEvent<HTMLTextAreaElement>) {
     if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
       e.preventDefault();
@@ -153,6 +161,7 @@ export function ContactLetter() {
                     autoComplete="name"
                     autoCapitalize="words"
                     enterKeyHint="next"
+                    onKeyDown={nextOnEnter}
                     required
                     className="blank-input"
                   />
@@ -166,6 +175,7 @@ export function ContactLetter() {
                     placeholder="company, if any"
                     autoComplete="organization"
                     enterKeyHint="next"
+                    onKeyDown={nextOnEnter}
                     className="blank-input"
                   />
                 </Blank>
@@ -184,6 +194,7 @@ export function ContactLetter() {
                     autoCapitalize="none"
                     spellCheck={false}
                     enterKeyHint="next"
+                    onKeyDown={nextOnEnter}
                     required
                     className="blank-input"
                   />
