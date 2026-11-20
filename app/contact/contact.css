@@ -18,7 +18,7 @@
   align-items: center;
   min-height: 0;
   gap: clamp(10px, 2.6vh, 34px);
-  padding-block: clamp(6px, 1.6vh, 18px) clamp(10px, 2.2vh, 26px);
+  padding-top: clamp(6px, 1.6vh, 18px);
 }
 
 .letter-top {
@@ -37,22 +37,37 @@
   height: min(25dvh, 44vw, 290px);
 }
 
+/*
+ * The letter's own scroll area. When everything fits (the usual case) nothing scrolls. When the
+ * visible area is short, as with a phone keyboard up, the letter keeps its full size and scrolls
+ * here instead of being squeezed or cut off. The side padding leaves room for glows and outlines.
+ */
 .letter-body {
   display: flex;
   flex-direction: column;
-  justify-content: center;
   flex: 1;
   min-height: 0;
-  width: 100%;
-  max-width: 660px;
+  width: calc(100% + 32px);
+  max-width: 692px;
+  margin-inline: -16px;
+  padding: 4px 16px clamp(10px, 2.4vh, 26px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+}
+.letter-body::-webkit-scrollbar { display: none; }
+
+/* Auto margins center the letter when there is room and still let it scroll from its top when not. */
+.letter-form,
+.letter-done {
+  margin-block: auto;
 }
 
 .letter-form {
   position: relative;
   display: flex;
+  flex: none;
   flex-direction: column;
-  min-height: 0;
-  max-height: 100%;
   gap: clamp(8px, 1.9vh, 20px);
 }
 
@@ -161,15 +176,13 @@
 .letter-note {
   display: flex;
   flex-direction: column;
-  flex: 0 1 auto;
-  min-height: 0;
+  flex: none;
   gap: clamp(6px, 1.2vh, 12px);
 }
 .note {
   position: relative;
   display: flex;
-  flex: 0 1 auto;
-  min-height: 0;
+  flex: none;
   border: 1px solid var(--color-line);
   border-radius: 16px;
   background: rgb(236 230 216 / 0.035);
@@ -185,9 +198,8 @@
 .note-input {
   display: block;
   width: 100%;
-  height: clamp(60px, 16vh, 168px);
-  height: clamp(60px, 16dvh, 168px);
-  min-height: 52px;
+  height: clamp(88px, 16vh, 168px);
+  height: clamp(88px, 16dvh, 168px);
   margin: 0;
   padding: 13px 16px;
   border: 0;
@@ -333,6 +345,11 @@
   margin: 0;
   font: italic 400 clamp(38px, min(11vw, 8vh), 76px) / 1.05 var(--font-display);
 }
+/* Room inside the clipped-gradient box for the italic overhang and descenders, so no glyph is cut. */
+.letter-done-title .verse-burn {
+  margin: -0.14em -0.18em -0.22em;
+  padding: 0.14em 0.18em 0.22em;
+}
 .letter-done-copy {
   max-width: 30ch;
   margin: 0;
@@ -385,6 +402,30 @@
   .letter-top { flex: 0 1 30%; }
   .tiger-contact { width: 100%; height: auto; }
   .letter-body { height: 100%; }
+}
+
+/*
+ * Keyboard up on a phone (set by ViewportFit): the screen is sized to the area above the keyboard,
+ * and the tiger, slogan and footer step aside so the letter gets all of it.
+ */
+:root[data-contact-compact] .letter-top,
+:root[data-contact-compact] .contact-footer {
+  display: none;
+}
+:root[data-contact-compact] .letter-main {
+  padding-top: 10px;
+}
+:root[data-contact-compact] .letter-body {
+  padding-bottom: 12px;
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 12px, #000 calc(100% - 18px), transparent);
+  mask-image: linear-gradient(to bottom, transparent, #000 12px, #000 calc(100% - 18px), transparent);
+}
+:root[data-contact-compact] .letter-form {
+  margin-block: 8px auto;
+}
+.contact-screen {
+  height: var(--contact-h, 100%);
+  transform: translateY(var(--contact-top, 0px));
 }
 
 @media (prefers-reduced-motion: reduce) {

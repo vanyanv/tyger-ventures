@@ -24,7 +24,6 @@ import { cn } from "@/lib/utils";
 /** idle: writing. sending: waiting on delivery. burning: the letter burns away. sent: confirmation. */
 type Phase = "idle" | "sending" | "burning" | "sent";
 
-const EASE = [0.2, 0.7, 0.2, 1] as const;
 const BURN_MS = 1150;
 
 /**
@@ -87,9 +86,20 @@ export function ContactLetter() {
       return;
     }
 
+    // Put the phone keyboard away so the burn and the thank-you get the whole screen.
+    if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
     setPhase("burning");
     tiger.current?.stir(1);
     window.setTimeout(() => setPhase("sent"), reduce ? 0 : BURN_MS);
+  }
+
+  /** Return on a one-line blank moves to the next field, so the phone keyboard's key never sends early. */
+  function nextOnEnter(e: KeyboardEvent<HTMLInputElement>) {
+    // keyCode 229: Safari reports the Return that confirms IME text with isComposing already false.
+    if (e.key !== "Enter" || e.nativeEvent.isComposing || e.nativeEvent.keyCode === 229) return;
+    e.preventDefault();
+    const next = CONTACT_ORDER[CONTACT_ORDER.indexOf(e.currentTarget.name as ContactField) + 1];
+    form.current?.querySelector<HTMLElement>(`[name="${next}"]`)?.focus();
   }
 
   function sendOnShortcut(e: KeyboardEvent<HTMLTextAreaElement>) {
@@ -153,6 +163,7 @@ export function ContactLetter() {
                     autoComplete="name"
                     autoCapitalize="words"
                     enterKeyHint="next"
+                    onKeyDown={nextOnEnter}
                     required
                     className="blank-input"
                   />
@@ -166,6 +177,7 @@ export function ContactLetter() {
                     placeholder="company, if any"
                     autoComplete="organization"
                     enterKeyHint="next"
+                    onKeyDown={nextOnEnter}
                     className="blank-input"
                   />
                 </Blank>
@@ -184,6 +196,7 @@ export function ContactLetter() {
                     autoCapitalize="none"
                     spellCheck={false}
                     enterKeyHint="next"
+                    onKeyDown={nextOnEnter}
                     required
                     className="blank-input"
                   />
@@ -234,14 +247,16 @@ export function ContactLetter() {
               </BlurFade>
             </motion.form>
           ) : (
-            <motion.div
+            // A CSS entrance, not a scripted one: once it ends no filter or transform is left on the
+            // block, which Safari needs to paint the clipped-gradient title in full.
+            <BlurFade
               key="sent"
               // Move focus to the confirmation so it is announced.
               ref={(el) => el?.focus({ preventScroll: true })}
               tabIndex={-1}
-              initial={reduce ? false : { opacity: 0, y: 14, filter: "blur(10px)" }}
-              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-              transition={{ duration: 1, ease: EASE, delay: 0.25 }}
+              delay={0.25}
+              duration={1}
+              offset={14}
               className="letter-done"
             >
               <h2 className="letter-done-title">
@@ -255,7 +270,7 @@ export function ContactLetter() {
               <button type="button" onClick={writeAnother} className="letter-again">
                 Write another
               </button>
-            </motion.div>
+            </BlurFade>
           )}
         </AnimatePresence>
       </div>
