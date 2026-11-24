@@ -12,12 +12,12 @@ import {
   EMPTY_CONTACT,
   isFilled,
   letterHeat,
-  sendContact,
   validateContact,
   type ContactErrors,
   type ContactField,
   type ContactValues,
 } from "@/lib/contact";
+import { sendContact } from "@/lib/send-contact";
 import { site } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
