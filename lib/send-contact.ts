@@ -3,6 +3,7 @@
 import { headers } from "next/headers";
 import { Resend } from "resend";
 
+import { contactEmailHtml, formatReceived, siteOrigin } from "@/lib/contact-email";
 import { CONTACT_LIMITS, CONTACT_ORDER, validateContact, type ContactValues } from "@/lib/contact";
 
 /**
@@ -36,10 +37,6 @@ function tooMany(key: string): boolean {
   if (recent.size > 5000) recent.clear();
   recent.set(key, times);
   return false;
-}
-
-function escapeHtml(s: string): string {
-  return s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
 }
 
 /** Keeps only the four string fields, trimmed, and refuses anything over its length limit. */
@@ -92,13 +89,7 @@ export async function sendContact(input: ContactValues): Promise<Result> {
     .filter((line) => line !== null)
     .join("\n");
 
-  const html = `<div style="font-family:Georgia,serif;font-size:16px;line-height:1.55;color:#111">
-<p style="margin:0 0 4px"><strong>From:</strong> ${escapeHtml(name)}</p>
-${company ? `<p style="margin:0 0 4px"><strong>Company:</strong> ${escapeHtml(company)}</p>` : ""}
-<p style="margin:0 0 16px"><strong>Email:</strong> <a href="mailto:${escapeHtml(email)}">${escapeHtml(email)}</a></p>
-<div style="white-space:pre-wrap;border-left:3px solid #e0a43a;padding-left:12px">${escapeHtml(message)}</div>
-<p style="margin:24px 0 0;font-size:13px;color:#666">Sent from the contact page at tygerventures.com. Reply to this email to answer them.</p>
-</div>`;
+  const html = contactEmailHtml(values, { received: formatReceived(new Date()), origin: siteOrigin() });
 
   try {
     const resend = new Resend(apiKey);
