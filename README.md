@@ -16,7 +16,7 @@ The tygerventures.com site: a single dark screen with no scrolling. The tiger lo
 | `app/page.tsx` | The home page |
 | `app/layout.tsx` | Fonts (Bodoni Moda, Schibsted Grotesk) and metadata |
 | `app/globals.css` | Color and font tokens, plus the few classes Tailwind utilities can't express |
-| `lib/site.ts` | All copy and links: name, slogan, verse, contact link, copyright |
+| `lib/site.ts` | All copy and links: name, verse, contact link, copyright |
 | `lib/ember-engine.ts` | The canvas particle engine (framework-free) |
 | `components/ember-tiger.tsx` | React wrapper for the engine; its ref exposes `stir()` and `burst()` |
 | `public/tiger-logo.svg` | The logo the particles are sampled from |

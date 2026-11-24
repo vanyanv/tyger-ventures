@@ -11,14 +11,9 @@ export default function Home() {
         <ContactLink />
       </header>
 
-      {/* The three gaps (header to slogan, tiger to verse, verse to footer) are always equal. */}
+      {/* The three gaps (header to tiger, tiger to verse, verse to footer) are always equal. */}
       <main className="flex min-h-0 flex-col items-center justify-evenly">
-        <div className="flex max-w-full flex-col items-center gap-[clamp(8px,1.8vh,18px)]">
-          <BlurFade delay={0.5}>
-            <p className="label-caps pl-[0.24em] text-center">{site.slogan}</p>
-          </BlurFade>
-          <EmberTiger className="tiger-home" />
-        </div>
+        <EmberTiger className="tiger-home" />
 
         <figure className="text-center">
           <blockquote className="font-display text-[length:var(--verse)] leading-[1.2] italic">

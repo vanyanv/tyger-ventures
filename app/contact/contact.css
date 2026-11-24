@@ -386,9 +386,8 @@
   70% { transform: translateX(-3px); }
 }
 
-/* Short screens (small phones, phones with the keyboard up): drop the slogan, shrink the tiger. */
+/* Short screens (small phones, phones with the keyboard up): shrink the tiger. */
 @media (max-height: 640px) {
-  .letter-slogan { display: none; }
   .tiger-contact { height: min(19dvh, 40vw); }
 }
 
@@ -406,7 +405,7 @@
 
 /*
  * Keyboard up on a phone (set by ViewportFit): the screen is sized to the area above the keyboard,
- * and the tiger, slogan and footer step aside so the letter gets all of it.
+ * and the tiger and footer step aside so the letter gets all of it.
  */
 :root[data-contact-compact] .letter-top,
 :root[data-contact-compact] .contact-footer {
