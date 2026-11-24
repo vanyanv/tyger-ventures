@@ -28,10 +28,14 @@ const recent = new Map<string, number[]>();
 function tooMany(key: string): boolean {
   const now = Date.now();
   const times = (recent.get(key) ?? []).filter((t) => now - t < WINDOW_MS);
+  if (times.length >= MAX_PER_WINDOW) {
+    recent.set(key, times);
+    return true;
+  }
   times.push(now);
-  recent.set(key, times);
   if (recent.size > 5000) recent.clear();
-  return times.length > MAX_PER_WINDOW;
+  recent.set(key, times);
+  return false;
 }
 
 function escapeHtml(s: string): string {
