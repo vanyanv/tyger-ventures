@@ -20,7 +20,7 @@ export default function ContactPage() {
       <header className="flex items-center justify-between gap-4">
         <Link
           href="/"
-          className="label-caps rounded-sm text-bone focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ember"
+          className="label-caps -my-2.5 rounded-sm py-2.5 text-bone focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ember"
         >
           {site.name}
         </Link>

@@ -118,7 +118,7 @@
 }
 .blank-input::placeholder {
   color: var(--color-dim);
-  opacity: 0.5;
+  opacity: 0.9;
 }
 .blank-input:-webkit-autofill {
   -webkit-text-fill-color: var(--color-hot);
@@ -216,7 +216,7 @@
 }
 .note-input::placeholder {
   color: var(--color-dim);
-  opacity: 0.6;
+  opacity: 0.9;
 }
 .note.is-bad .note-input::placeholder {
   color: var(--bad);
