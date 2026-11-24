@@ -1,4 +1,4 @@
-/** The contact letter: its fields, limits, validation, and the (not yet wired) send step. */
+/** The contact letter: its fields, limits and validation. Sending lives in lib/send-contact.ts. */
 
 export type ContactField = "name" | "company" | "email" | "message";
 export type ContactValues = Record<ContactField, string>;
@@ -45,15 +45,4 @@ export function letterHeat(values: ContactValues): number {
     (isFilled("email", values.email) ? 0.09 : 0) +
     words * 0.16
   );
-}
-
-/**
- * NOT WIRED YET. This sends nothing: it waits a moment and reports success so the page's
- * sending and sent states can be seen. Replace the body with the real delivery (for example a
- * server action that emails the note) once the recipient is decided.
- */
-export async function sendContact(values: ContactValues): Promise<{ ok: true } | { ok: false; error: string }> {
-  void values;
-  await new Promise((done) => setTimeout(done, 900));
-  return { ok: true };
 }
