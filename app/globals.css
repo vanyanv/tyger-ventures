@@ -116,6 +116,15 @@ body {
     }
   }
 
+  /* Border Beam: a light travelling once around its parent's border per lap. */
+  .border-beam {
+    animation: border-beam var(--beam-duration, 6s) linear var(--beam-delay, 0s) infinite;
+  }
+  @keyframes border-beam {
+    from { offset-distance: 0%; }
+    to { offset-distance: 100%; }
+  }
+
   /* A band of fire sweeps through each line of the verse in turn. */
   .verse-burn {
     color: transparent;
@@ -132,7 +141,8 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .ember-glow,
   .verse-burn,
-  .blur-fade {
+  .blur-fade,
+  .border-beam {
     animation: none;
   }
   .ember-still { transition: none; }
