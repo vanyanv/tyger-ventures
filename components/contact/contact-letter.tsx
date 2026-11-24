@@ -133,10 +133,6 @@ export function ContactLetter() {
 
       <div className="letter-top">
         <EmberTiger ref={tiger} className="tiger-contact" flameScale={0.62} />
-        {/* Under the tiger here, not over it as on the home page, so the flames don't wash it out. */}
-        <BlurFade delay={0.4} className="letter-slogan">
-          <p className="label-caps pl-[0.24em] text-center">{site.slogan}</p>
-        </BlurFade>
       </div>
 
       <div className="letter-body">

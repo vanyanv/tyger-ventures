@@ -21,11 +21,11 @@ const schibsted = Schibsted_Grotesk({
 
 export const metadata: Metadata = {
   title: { default: site.name, template: `%s | ${site.name}` },
-  description: `${site.name}. ${site.slogan}.`,
+  description: `${site.name}. ${site.verse[0]}.`,
   icons: { icon: { url: "/tiger-logo.svg", type: "image/svg+xml" } },
   openGraph: {
     title: site.name,
-    description: `${site.slogan}.`,
+    description: `${site.verse[0]}.`,
     type: "website",
   },
 };

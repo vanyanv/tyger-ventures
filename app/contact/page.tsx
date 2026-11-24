@@ -10,7 +10,7 @@ import "./contact.css";
 
 export const metadata: Metadata = {
   title: "Contact",
-  description: `Write to ${site.name}. ${site.slogan}.`,
+  description: `Write to ${site.name}.`,
 };
 
 export default function ContactPage() {
