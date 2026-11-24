@@ -34,6 +34,7 @@ const BURN_MS = 1150;
 export function ContactLetter() {
   const tiger = useRef<EmberTigerHandle>(null);
   const form = useRef<HTMLFormElement>(null);
+  const refocus = useRef(false);
   const statusId = useId();
   const reduce = useReducedMotion();
 
@@ -110,6 +111,7 @@ export function ContactLetter() {
   }
 
   function writeAnother() {
+    refocus.current = true;
     setValues(EMPTY_CONTACT);
     setErrors({});
     setNotice(null);
@@ -122,7 +124,7 @@ export function ContactLetter() {
     readOnly: busy,
     maxLength: CONTACT_LIMITS[field],
     "aria-invalid": errors[field] ? true : undefined,
-    "aria-describedby": errors[field] ? statusId : undefined,
+    "aria-describedby": errors[field] && errors[field] === firstError ? statusId : undefined,
   });
   const left = CONTACT_LIMITS.message - values.message.length;
   const firstName = values.name.trim().split(/\s+/)[0];
@@ -140,7 +142,14 @@ export function ContactLetter() {
           {phase !== "sent" ? (
             <motion.form
               key="letter"
-              ref={form}
+              ref={(el: HTMLFormElement | null) => {
+                form.current = el;
+                // After "Write another", start the new form at its first field.
+                if (el && refocus.current) {
+                  refocus.current = false;
+                  el.querySelector<HTMLElement>('[name="name"]')?.focus({ preventScroll: true });
+                }
+              }}
               noValidate
               onSubmit={submit}
               aria-busy={busy}
