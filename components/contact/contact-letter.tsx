@@ -27,9 +27,9 @@ type Phase = "idle" | "sending" | "burning" | "sent";
 const BURN_MS = 1150;
 
 /**
- * The contact page body: a short letter with blanks to fill in, under the ember tiger.
- * The tiger is the progress bar. Every finished blank raises its resting heat, so a complete
- * letter leaves it in flames, and sending burns the letter away and sets the whole tiger ablaze.
+ * The contact page body: a labelled form in one outlined panel, under the ember tiger.
+ * The tiger is the progress bar. Every finished row raises its resting heat, so a complete
+ * form leaves it in flames, and sending burns the form away and sets the whole tiger ablaze.
  */
 export function ContactLetter() {
   const tiger = useRef<EmberTigerHandle>(null);
@@ -148,45 +148,39 @@ export function ContactLetter() {
               transition={{ duration: 0.2 }}
               className={cn("letter-form", phase === "burning" && "is-burning")}
             >
-              <BlurFade delay={0.7} className="letter-pair">
-                <Blank lead="I’m" lit={isFilled("name", values.name)} bad={!!errors.name}>
+              <BlurFade delay={0.7} className="panel">
+                <Row label="Name" lit={isFilled("name", values.name)} bad={!!errors.name}>
                   <input
                     {...blank("name")}
                     onChange={change}
                     type="text"
-                    aria-label="Your name"
-                    placeholder="your name"
+                    placeholder="Your name"
                     autoComplete="name"
                     autoCapitalize="words"
                     enterKeyHint="next"
                     onKeyDown={nextOnEnter}
                     required
-                    className="blank-input"
+                    className="row-input"
                   />
-                </Blank>
-                <Blank lead="from" lit={isFilled("company", values.company)} bad={!!errors.company}>
+                </Row>
+                <Row label="Company" lit={isFilled("company", values.company)} bad={!!errors.company}>
                   <input
                     {...blank("company")}
                     onChange={change}
                     type="text"
-                    aria-label="Company (optional)"
-                    placeholder="company, if any"
+                    placeholder="Optional"
                     autoComplete="organization"
                     enterKeyHint="next"
                     onKeyDown={nextOnEnter}
-                    className="blank-input"
+                    className="row-input"
                   />
-                </Blank>
-              </BlurFade>
-
-              <BlurFade delay={0.9}>
-                <Blank lead="Reach me at" lit={isFilled("email", values.email)} bad={!!errors.email}>
+                </Row>
+                <Row label="Email" lit={isFilled("email", values.email)} bad={!!errors.email}>
                   <input
                     {...blank("email")}
                     onChange={change}
                     type="email"
                     inputMode="email"
-                    aria-label="Your email"
                     placeholder="you@email.com"
                     autoComplete="email"
                     autoCapitalize="none"
@@ -194,37 +188,28 @@ export function ContactLetter() {
                     enterKeyHint="next"
                     onKeyDown={nextOnEnter}
                     required
-                    className="blank-input"
+                    className="row-input"
                   />
-                </Blank>
-              </BlurFade>
-
-              <BlurFade delay={1.1} className="letter-note">
-                <label htmlFor="contact-message" className="blank-lead">
-                  Here’s the idea:
-                </label>
-                <div className={cn("note", errors.message && "is-bad")}>
+                </Row>
+                <Row label="Your idea" lit={isFilled("message", values.message)} bad={!!errors.message} tall>
                   <textarea
                     {...blank("message")}
                     onChange={change}
-                    id="contact-message"
                     placeholder="What are you building, and what do you need?"
                     onKeyDown={sendOnShortcut}
                     required
-                    className="note-input"
+                    className="row-input row-note"
                   />
                   {left <= 200 && (
                     <span className="note-count" aria-hidden="true">
                       {left}
                     </span>
                   )}
-                  <div className="note-beam" aria-hidden="true">
-                    <BorderBeam size={90} duration={7} colorFrom="var(--color-hot)" colorTo="var(--color-ember)" />
-                  </div>
-                </div>
+                </Row>
+                <BorderBeam size={110} duration={9} colorFrom="var(--color-hot)" colorTo="var(--color-ember)" />
               </BlurFade>
 
-              <BlurFade delay={1.3} className="letter-send">
+              <BlurFade delay={0.95} className="letter-send">
                 <p id={statusId} role="status" aria-live="polite" className="letter-status">
                   {firstError}
                 </p>
@@ -274,23 +259,21 @@ export function ContactLetter() {
   );
 }
 
-interface BlankProps {
-  /** The words of the sentence that lead into the blank. */
-  lead: string;
+interface RowProps {
+  label: string;
   lit: boolean;
   bad: boolean;
+  /** The message row: label at the top, field several lines tall. */
+  tall?: boolean;
   children: React.ReactNode;
 }
 
-/** One blank in the letter: lead-in words, then a field on an underline that lights when filled. */
-function Blank({ lead, lit, bad, children }: BlankProps) {
+/** One row of the panel: a label, then its field. A filled row keeps a small ember at its edge. */
+function Row({ label, lit, bad, tall, children }: RowProps) {
   return (
-    <label className={cn("blank", lit && "is-lit", bad && "is-bad")}>
-      <span className="blank-lead">{lead}</span>
-      <span className="blank-well">
-        {children}
-        <i className="blank-line" aria-hidden="true" />
-      </span>
+    <label className={cn("row", tall && "is-tall", lit && "is-lit", bad && "is-bad")}>
+      <span className="row-label">{label}</span>
+      {children}
     </label>
   );
 }

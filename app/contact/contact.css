@@ -1,4 +1,4 @@
-/* Contact page: a letter with blanks, under the ember tiger. One screen, no page scroll. */
+/* Contact page: a labelled form in one outlined panel, under the ember tiger. One screen, no page scroll. */
 
 @property --burn {
   syntax: "<percentage>";
@@ -7,8 +7,6 @@
 }
 
 .contact-screen {
-  /* Size of the letter's serif type. Never below 16px, so phones don't zoom on focus. */
-  --letter: clamp(21px, min(5.7vw, 3.5vh), 34px);
   --bad: #ff7a5c;
 }
 
@@ -48,7 +46,7 @@
   flex: 1;
   min-height: 0;
   width: calc(100% + 32px);
-  max-width: 692px;
+  max-width: 652px;
   margin-inline: -16px;
   padding: 4px 16px clamp(10px, 2.4vh, 26px);
   overflow-y: auto;
@@ -68,160 +66,99 @@
   display: flex;
   flex: none;
   flex-direction: column;
-  gap: clamp(8px, 1.9vh, 20px);
+  gap: clamp(12px, 2.2vh, 20px);
 }
 
-.letter-pair {
-  display: grid;
-  gap: inherit;
-}
-@media (min-width: 640px) {
-  .letter-pair {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
-    column-gap: 0.5em;
-  }
-}
-
-/* A blank: lead-in words, then a field that takes the rest of the line. */
-.blank {
-  display: flex;
-  align-items: baseline;
-  gap: 0.36em;
-  min-width: 0;
-  font: italic 400 var(--letter) / 1.2 var(--font-display);
-}
-.blank-lead {
-  flex: none;
-  color: var(--color-bone);
-  font: italic 400 var(--letter) / 1.2 var(--font-display);
-  white-space: nowrap;
-}
-.blank-well {
+/* The panel: one outlined box of labelled rows, with a beam of light circling it. */
+.panel {
   position: relative;
-  flex: 1;
-  min-width: 0;
+  border: 1px solid var(--color-line);
+  border-radius: 18px;
+  background: rgb(236 230 216 / 0.03);
 }
-.blank-input {
+.row {
+  position: relative;
+  display: grid;
+  grid-template-columns: clamp(76px, 22%, 128px) minmax(0, 1fr);
+  align-items: center;
+  padding: 0 clamp(14px, 3.6vw, 22px);
+  transition: background-color 0.4s;
+}
+.row + .row { border-top: 1px solid var(--color-line); }
+.row:first-of-type { border-radius: 17px 17px 0 0; }
+.row.is-tall { align-items: start; border-radius: 0 0 17px 17px; }
+.row:focus-within { background: rgb(255 154 46 / 0.06); }
+.row-label {
+  color: var(--color-dim);
+  font: 500 13px/1.2 var(--font-ui);
+  letter-spacing: 0.02em;
+  transition: color 0.4s;
+}
+.row.is-tall .row-label { padding-top: 17px; }
+.row:focus-within .row-label,
+.row.is-lit .row-label { color: var(--color-ember); }
+/* 16px, so phones don't zoom on focus. */
+.row-input {
   display: block;
   width: 100%;
   margin: 0;
-  padding: 0.1em 0.06em 0.22em;
+  padding: clamp(11px, 1.9vh, 16px) 18px clamp(11px, 1.9vh, 16px) 0;
   border: 0;
   border-radius: 0;
   outline: none;
   background: transparent;
   color: var(--color-bone);
-  font: inherit;
+  font: 400 16px/1.5 var(--font-ui);
   text-overflow: ellipsis;
   caret-color: var(--color-ember);
-  transition: color 0.5s, text-shadow 0.5s;
+  transition: color 0.5s;
 }
-.blank-input::placeholder {
-  color: var(--color-dim);
-  opacity: 0.5;
-}
-.blank-input:-webkit-autofill {
-  -webkit-text-fill-color: var(--color-hot);
-  transition: background-color 99999s;
-}
-
-/* The underline: a faint rule, with an ember line drawn over it on focus and kept once filled. */
-.blank-line {
-  position: absolute;
-  inset: auto 0 0;
-  height: 1px;
-  background: rgb(236 230 216 / 0.24);
-  pointer-events: none;
-}
-.blank-line::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, var(--color-ember), var(--color-hot) 55%, var(--color-ember));
-  box-shadow: 0 0 12px rgb(255 154 46 / 0.7);
-  opacity: 0;
-  transform: scaleX(0);
-  transform-origin: 0 50%;
-  transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1), opacity 0.4s;
-}
-.blank:focus-within .blank-line::after {
-  opacity: 1;
-  transform: scaleX(1);
-}
-.blank.is-lit .blank-line::after {
-  opacity: 0.55;
-  transform: scaleX(1);
-}
-.blank.is-lit:focus-within .blank-line::after {
-  opacity: 1;
-}
-.blank.is-lit .blank-input {
-  color: var(--color-hot);
-  text-shadow: 0 0 18px rgb(255 154 46 / 0.5);
-}
-
-.blank.is-bad .blank-line {
-  background: var(--bad);
-}
-.blank.is-bad .blank-input::placeholder {
-  color: var(--bad);
-  opacity: 0.85;
-}
-.blank.is-bad .blank-well,
-.note.is-bad {
-  animation: letter-nudge 0.42s cubic-bezier(0.3, 0.6, 0.3, 1);
-}
-
-/* The message. */
-.letter-note {
-  display: flex;
-  flex-direction: column;
-  flex: none;
-  gap: clamp(6px, 1.2vh, 12px);
-}
-.note {
-  position: relative;
-  display: flex;
-  flex: none;
-  border: 1px solid var(--color-line);
-  border-radius: 16px;
-  background: rgb(236 230 216 / 0.035);
-  transition: border-color 0.4s, background-color 0.4s;
-}
-.note:focus-within {
-  border-color: rgb(255 154 46 / 0.4);
-  background: rgb(255 154 46 / 0.045);
-}
-.note.is-bad {
-  border-color: var(--bad);
-}
-.note-input {
-  display: block;
-  width: 100%;
-  height: clamp(88px, 16vh, 168px);
-  height: clamp(88px, 16dvh, 168px);
-  margin: 0;
-  padding: 13px 16px;
-  border: 0;
-  border-radius: inherit;
-  outline: none;
-  background: transparent;
-  color: var(--color-bone);
-  font: 400 16px/1.5 var(--font-ui);
-  caret-color: var(--color-ember);
+.row-note {
+  height: clamp(96px, 17vh, 172px);
+  height: clamp(96px, 17dvh, 172px);
+  padding-block: 14px;
   resize: none;
   overscroll-behavior: contain;
   scrollbar-width: thin;
   scrollbar-color: rgb(236 230 216 / 0.2) transparent;
 }
-.note-input::placeholder {
+.row-input::placeholder {
   color: var(--color-dim);
-  opacity: 0.6;
+  opacity: 0.55;
 }
-.note.is-bad .note-input::placeholder {
+.row-input:-webkit-autofill {
+  -webkit-text-fill-color: var(--color-hot);
+  transition: background-color 99999s;
+}
+.row.is-lit .row-input { color: var(--color-hot); }
+/* A filled row keeps a small ember at its edge. */
+.row::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: clamp(14px, 3.6vw, 22px);
+  width: 5px;
+  height: 5px;
+  margin-top: -2.5px;
+  border-radius: 50%;
+  background: var(--color-ember);
+  box-shadow: 0 0 10px rgb(255 154 46 / 0.9);
+  opacity: 0;
+  transform: scale(0.3);
+  transition: opacity 0.4s, transform 0.4s;
+  pointer-events: none;
+}
+.row.is-tall::after { top: 26px; }
+.row.is-lit::after {
+  opacity: 1;
+  transform: none;
+}
+.row.is-bad .row-label { color: var(--bad); }
+.row.is-bad .row-input::placeholder {
   color: var(--bad);
   opacity: 0.85;
 }
+.row.is-bad { animation: letter-nudge 0.42s cubic-bezier(0.3, 0.6, 0.3, 1); }
 .note-count {
   position: absolute;
   right: 12px;
@@ -230,17 +167,6 @@
   font: 500 11px/1 var(--font-ui);
   font-variant-numeric: tabular-nums;
   pointer-events: none;
-}
-.note-beam {
-  position: absolute;
-  inset: -1px;
-  border-radius: inherit;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.5s;
-}
-.note:focus-within .note-beam {
-  opacity: 1;
 }
 
 /* Status line and the send button. */
@@ -323,13 +249,12 @@
   background: linear-gradient(90deg, transparent, var(--color-ember) 12%, var(--color-hot) 50%, var(--color-ember) 88%, transparent);
   box-shadow: 0 0 22px 5px rgb(255 138 30 / 0.6);
 }
-.letter-form.is-burning .blank-lead,
-.letter-form.is-burning .blank-input,
-.letter-form.is-burning .note-input {
+.letter-form.is-burning .row-label,
+.letter-form.is-burning .row-input {
   color: var(--color-ember);
   transition: color 0.7s;
 }
-.letter-form.is-burning .note {
+.letter-form.is-burning .panel {
   border-color: rgb(255 154 46 / 0.6);
 }
 
@@ -428,10 +353,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .blank.is-bad .blank-well,
-  .note.is-bad,
+  .row.is-bad,
   .letter-form.is-burning {
     animation: none;
   }
-  .blank-line::after { transition: none; }
 }
